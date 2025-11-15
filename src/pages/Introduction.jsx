@@ -2,6 +2,8 @@ import { ArrowRight, CheckCircle, Zap } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import CodeBlock from '../components/CodeBlock'
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+
 export default function Introduction() {
   return (
     <div className="space-y-8">
@@ -56,7 +58,7 @@ export default function Introduction() {
       <div>
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Базовый URL</h2>
         <CodeBlock 
-          code={`https://api.dataapi.com/v2`}
+          code={API_BASE_URL}
           language="text"
         />
         <p className="text-gray-600 mt-2">
@@ -67,11 +69,69 @@ export default function Introduction() {
       <div>
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Пример запроса</h2>
         <CodeBlock 
-          code={`curl -X GET "https://api.dataapi.com/v2/users" \\
+          code={`curl -X GET "${API_BASE_URL}/v2/users" \\
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \\
   -H "Content-Type: application/json"`}
           language="bash"
         />
+      </div>
+
+      <div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">Пример ответа</h2>
+        <CodeBlock 
+          code={`{
+  "status": "success",
+  "data": {
+    "users": [
+      {
+        "id": 1,
+        "name": "John Doe",
+        "email": "john@example.com",
+        "created_at": "2025-01-15T10:30:00Z"
+      }
+    ],
+    "pagination": {
+      "total": 1,
+      "page": 1,
+      "per_page": 10
+    }
+  },
+  "timestamp": "2025-11-11T12:00:00Z"
+}`}
+          language="json"
+        />
+      </div>
+
+      <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Следующие шаги</h3>
+        <div className="space-y-3">
+          <Link to="/authentication" className="flex items-center text-blue-600 hover:text-blue-800 group">
+            <ArrowRight size={20} className="mr-2 group-hover:translate-x-1 transition-transform" />
+            Начните с настройки аутентификации
+          </Link>
+          <Link to="/endpoints" className="flex items-center text-blue-600 hover:text-blue-800 group">
+            <ArrowRight size={20} className="mr-2 group-hover:translate-x-1 transition-transform" />
+            Изучите доступные API endpoints
+          </Link>
+          <Link to="/explorer" className="flex items-center text-blue-600 hover:text-blue-800 group">
+            <ArrowRight size={20} className="mr-2 group-hover:translate-x-1 transition-transform" />
+            Попробуйте API Explorer
+          </Link>
+        </div>
+      </div>
+
+      <div className="border-t border-gray-200 pt-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-3">Нужна помощь?</h3>
+        <p className="text-gray-600">
+          Если у вас возникли вопросы, обратитесь к нашей документации или свяжитесь с поддержкой:
+          <a href="mailto:support@dataapi.com" className="text-blue-600 hover:underline ml-1">
+            support@dataapi.com
+          </a>
+        </p>
+      </div>
+    </div>
+  )
+}
       </div>
 
       <div>
