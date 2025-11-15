@@ -61,12 +61,13 @@ export default function ApiExplorer() {
           result = await usersAPI.getById(1)
           break
         
-        case '/v2/auth/login':
+        case '/v2/auth/login': {
           const loginData = JSON.parse(requestBody)
           result = await authAPI.login(loginData.email, loginData.password)
           break
+        }
         
-        case '/v2/auth/register':
+        case '/v2/auth/register': {
           const registerData = JSON.parse(requestBody)
           result = await authAPI.register(
             registerData.name,
@@ -75,6 +76,7 @@ export default function ApiExplorer() {
             registerData.password_confirmation
           )
           break
+        }
         
         default:
           throw new Error('Endpoint not implemented')
