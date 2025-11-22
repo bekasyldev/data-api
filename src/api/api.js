@@ -71,10 +71,10 @@ export const authAPI = {
     return data;
   },
 
-  register: async (name, email, password, password_confirmation) => {
+  register: async (name, email, password, password_confirmation, role = 'user') => {
     const data = await apiRequest('/v2/auth/register', {
       method: 'POST',
-      body: JSON.stringify({ name, email, password, password_confirmation }),
+      body: JSON.stringify({ name, email, password, password_confirmation, role }),
       skipAuth: true,
     });
     
@@ -196,10 +196,19 @@ export const rootAPI = {
   },
 };
 
+export const calculatorAPI = {
+  evaluate: async (formula) => {
+    return await apiRequest(`/v2/calculator?formula=${encodeURIComponent(formula)}`, {
+      method: 'POST',
+    });
+  },
+};
+
 export default {
   auth: authAPI,
   users: usersAPI,
   data: dataAPI,
   debug: debugAPI,
   root: rootAPI,
+  calculator: calculatorAPI,
 };

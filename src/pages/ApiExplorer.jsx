@@ -1,13 +1,14 @@
 import { useState } from 'react'
-import { Send, Code, AlertCircle } from 'lucide-react'
+import { Send, Code, AlertCircle, Calculator } from 'lucide-react'
 import CodeBlock from '../components/CodeBlock'
 import { usersAPI, authAPI, getToken } from '../api/api'
 
 const endpoints = [
-  { method: 'GET', path: '/v2/users', name: 'Get Users', needsAuth: true },
-  { method: 'GET', path: '/v2/users/1', name: 'Get User by ID', needsAuth: true },
-  { method: 'POST', path: '/v2/auth/login', name: 'Login', needsAuth: false },
-  { method: 'POST', path: '/v2/auth/register', name: 'Register', needsAuth: false },
+  { method: 'GET', path: '/v2/users', name: 'Get Users', needsAuth: true, needsAdmin: false },
+  { method: 'GET', path: '/v2/users/1', name: 'Get User by ID', needsAuth: true, needsAdmin: false },
+  { method: 'POST', path: '/v2/auth/login', name: 'Login', needsAuth: false, needsAdmin: false },
+  { method: 'POST', path: '/v2/auth/register', name: 'Register', needsAuth: false, needsAdmin: false },
+  { method: 'POST', path: '/v2/calculator', name: 'Calculator ', needsAuth: true, needsAdmin: true },
 ]
 
 export default function ApiExplorer() {
@@ -28,6 +29,9 @@ export default function ApiExplorer() {
         password: 'password123',
         password_confirmation: 'password123'
       }, null, 2)
+    }
+    if (endpoint.path === '/v2/calculator') {
+      return '2 + 2'
     }
     return ''
   }
@@ -73,8 +77,20 @@ export default function ApiExplorer() {
             registerData.name,
             registerData.email,
             registerData.password,
-            registerData.password_confirmation
+            registerData.password_confirmation,
+            registerData.role || 'user'
           )
+          break
+        }
+        
+        case '/v2/calculator': {
+          result = await fetch(`http://localhost:8000/v2/calculator?formula=${encodeURIComponent(requestBody)}`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${getToken()}`,
+              'Content-Type': 'application/json'
+            }
+          }).then(res => res.json())
           break
         }
         
@@ -103,13 +119,12 @@ export default function ApiExplorer() {
       </div>
 
       {!getToken() && (
-        <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded">
+        <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
           <div className="flex items-start">
-            <AlertCircle className="text-yellow-500 mr-3 mt-0.5" size={20} />
+            <AlertCircle className="text-blue-600 mr-3 mt-0.5" size={20} />
             <div>
-              <p className="text-sm text-yellow-800">
-                <strong>Note:</strong> You need to login first to test authenticated endpoints. 
-                Try the Login endpoint with: <code className="bg-yellow-100 px-1 rounded">user@example.com</code> / <code className="bg-yellow-100 px-1 rounded">user123</code>
+              <p className="text-sm text-blue-800">
+                Please login or register to test authenticated endpoints.
               </p>
             </div>
           </div>
@@ -128,7 +143,7 @@ export default function ApiExplorer() {
                   selectedEndpoint === endpoint
                     ? 'border-blue-500 bg-blue-50'
                     : 'border-gray-200 hover:border-gray-300'
-                }`}
+                } ${endpoint.needsAdmin ? 'border-red-200 bg-red-50' : ''}`}
               >
                 <div className="flex items-center gap-3">
                   <span className={`badge badge-${endpoint.method.toLowerCase()}`}>
@@ -146,14 +161,17 @@ export default function ApiExplorer() {
             ))}
           </div>
 
-          {requestBody && (
+          {(requestBody || selectedEndpoint.path === '/v2/calculator') && (
             <div className="mt-4">
-              <h3 className="text-sm font-semibold text-gray-900 mb-2">Request Body:</h3>
+              <h3 className="text-sm font-semibold text-gray-900 mb-2">
+                {selectedEndpoint.path === '/v2/calculator' ? 'Formula:' : 'Request Body:'}
+              </h3>
               <textarea
                 value={requestBody}
                 onChange={(e) => setRequestBody(e.target.value)}
                 className="w-full p-3 border border-gray-300 rounded-lg font-mono text-sm"
-                rows={8}
+                rows={selectedEndpoint.path === '/v2/calculator' ? 3 : 8}
+                placeholder={selectedEndpoint.path === '/v2/calculator' ? 'Enter formula (e.g., 2 + 2)' : ''}
               />
             </div>
           )}
