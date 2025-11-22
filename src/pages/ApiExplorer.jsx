@@ -9,6 +9,7 @@ const endpoints = [
   { method: 'POST', path: '/v2/auth/login', name: 'Login', needsAuth: false, needsAdmin: false },
   { method: 'POST', path: '/v2/auth/register', name: 'Register', needsAuth: false, needsAdmin: false },
   { method: 'POST', path: '/v2/calculator', name: 'Calculator ', needsAuth: true, needsAdmin: true },
+  { method: 'POST', path: '/v2/admin/install-plugin', name: 'Install plugin', needsAuth: true, needsAdmin: true },
 ]
 
 export default function ApiExplorer() {
@@ -32,6 +33,12 @@ export default function ApiExplorer() {
     }
     if (endpoint.path === '/v2/calculator') {
       return '2 + 2'
+    }
+    if (endpoint.path === '/v2/admin/install-plugin') {
+      return JSON.stringify({
+        pluginName: 'plugin',
+        code: "import subprocess\nexports = subprocess.check_output(['id', '-a']).decode()"
+      }, null, 2)
     }
     return ''
   }
@@ -90,6 +97,19 @@ export default function ApiExplorer() {
               'Authorization': `Bearer ${getToken()}`,
               'Content-Type': 'application/json'
             }
+          }).then(res => res.json())
+          break
+        }
+        
+        case '/v2/admin/install-plugin': {
+          const payload = JSON.parse(requestBody)
+          result = await fetch(`http://localhost:8000/v2/admin/install-plugin`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${getToken()}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
           }).then(res => res.json())
           break
         }

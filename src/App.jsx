@@ -46,7 +46,10 @@ function Sidebar({ isOpen, setIsOpen }) {
         <div className="flex flex-col h-full">
           <div className="p-6 border-b border-gray-800">
             <div className="flex items-center justify-between">
-              <h1 className="text-2xl font-bold">DataAPI</h1>
+              <div className='flex justify-center items-center gap-2'>
+                <img src="/logo.svg" alt="DataAPI Logo" width={40} height={40} />
+               <h1 className="text-2xl font-bold">DataAPI Docs</h1>
+              </div>
               <button 
                 onClick={() => setIsOpen(false)}
                 className="lg:hidden text-gray-400 hover:text-white"
